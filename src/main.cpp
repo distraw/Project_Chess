@@ -8,6 +8,7 @@
 #include "core/shader.h"
 #include "core/program.h"
 
+#include "render/texture.h"
 #include "render/vao.h"
 #include "render/vbo.h"
 
@@ -52,20 +53,34 @@ int main() {
     VAO vao(log);
     vao.Init();
     
-    float vertices[]{-0.9f, -0.5f, 0.5f, -0.5f, 0.f, 0.5f};
+    float vertices[]{-1.f, -1.f, 1.f, -1.f, 1.f, 1.f, -1.f, 1.f};
+    float texcoord[]{0, 0, 1, 0, 1, 1, 0, 1};
 
     VBO vbo(log);
     vbo.Init(vertices, sizeof(vertices));
 
+    VBO tbo(log);
+    tbo.Init(texcoord, sizeof(texcoord));
+
     vao.Attach(vbo.native_vbo(), 0);
+    vao.Attach(tbo.native_vbo(), 1);
+
+    Texture texture(log);
+    if (!texture.Init("texture/board.jpg")) {
+        log->critical("failed to load texture");
+        return -1;
+    }
 
     window.ChangeBackgroundColor(0, 0, 0);
     while (window.IsOpened()) {
         window.Refresh();
         glfwPollEvents();
 
+        program.Use();
         vao.Use();
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        texture.Use();
+        glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+        texture.Use(false);
         vao.Use(false);
     }
 
