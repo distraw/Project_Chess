@@ -21,7 +21,7 @@ Texture::~Texture() {
 bool Texture::Init(string path) {
     // nr_channels stands for number of color channels per pixel (usually RGB, or RGB+Alpha)
     int width, height, nr_channels;
-    unsigned char* source = stbi_load(path.c_str(), &width, &height, &nr_channels, 0);
+    unsigned char* source = stbi_load(path.c_str(), &width, &height, &nr_channels, STBI_rgb_alpha);
     if (!source) {
         _log->critical("failed to load {0} into texture", path);
         return false;
@@ -36,10 +36,12 @@ bool Texture::Init(string path) {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-    GLint channel_type = (nr_channels == 3 ? GL_RGB : GL_RGBA);
+    GLint channel_type = GL_RGBA;
     glTexImage2D(GL_TEXTURE_2D, 0, channel_type, width, height,
                 0, channel_type, GL_UNSIGNED_BYTE, source);
-    _log->trace("created texture and set the appropriate settings");
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     return true;
 }

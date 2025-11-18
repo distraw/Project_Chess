@@ -8,9 +8,7 @@
 #include "core/shader.h"
 #include "core/program.h"
 
-#include "render/texture.h"
-#include "render/vao.h"
-#include "render/vbo.h"
+#include "render/sprite.h"
 
 #include "util/config.h"
 
@@ -48,40 +46,42 @@ int main() {
         return -1;
     }
 
-    program.Use();
-
-    VAO vao(log);
-    vao.Init();
-    
-    float vertices[]{-1.f, -1.f, 1.f, -1.f, 1.f, 1.f, -1.f, 1.f};
-    float texcoord[]{0, 0, 1, 0, 1, 1, 0, 1};
-
-    VBO vbo(log);
-    vbo.Init(vertices, sizeof(vertices));
-
-    VBO tbo(log);
-    tbo.Init(texcoord, sizeof(texcoord));
-
-    vao.Attach(vbo.native_vbo(), 0);
-    vao.Attach(tbo.native_vbo(), 1);
-
-    Texture texture(log);
-    if (!texture.Init("texture/board.jpg")) {
-        log->critical("failed to load texture");
+    Sprite board(log);
+    if (!board.Init("texture/board.jpg", 2, 2)) {
+        log->critical("failed to load board");
         return -1;
     }
+    board.AttachProgram(program.native_program());
+    board.SetPosition(0, 0);
 
-    window.ChangeBackgroundColor(0, 0, 0);
+    const float CELL_SIZE = 2.f / 8.f;
+
+    Sprite king(log);
+    if (!king.Init("texture/white-king.png", CELL_SIZE, CELL_SIZE)) {
+        log->critical("failed to load board");
+        return -1;
+    }
+    king.AttachProgram(program.native_program());
+    king.SetPosition(0, 0);
+
+    Sprite queen(log);
+    if (!queen.Init("texture/white-queen.png", CELL_SIZE, CELL_SIZE)) {
+        log->critical("failed to load board");
+        return -1;
+    }
+    queen.AttachProgram(program.native_program());
+    queen.SetPosition(CELL_SIZE, 0);
+
+    program.Use();
+
+    window.ChangeBackgroundColor(1, 0, 0);
     while (window.IsOpened()) {
         window.Refresh();
         glfwPollEvents();
 
-        program.Use();
-        vao.Use();
-        texture.Use();
-        glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
-        texture.Use(false);
-        vao.Use(false);
+        board.Draw();
+        king.Draw();
+        queen.Draw();
     }
 
     return 0;
