@@ -1,5 +1,7 @@
 #include "sprite.h"
 
+namespace render {
+
 Sprite::Sprite(shared_ptr<spdlog::logger> log) {
     _log = log;
 }
@@ -9,7 +11,7 @@ Sprite::~Sprite() {
     delete _vao;
     delete _vbo;
     delete _tbo;
-    
+
     _log->trace("deleting sprite...");
 }
 
@@ -64,4 +66,6 @@ void Sprite::Draw() {
 
     _texture->Use(false);
     _vao->Use(false);
+}
+
 }

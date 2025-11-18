@@ -8,7 +8,7 @@
 #include "core/shader.h"
 #include "core/program.h"
 
-#include "render/sprite.h"
+#include "render/piece.h"
 
 #include "util/config.h"
 
@@ -46,7 +46,7 @@ int main() {
         return -1;
     }
 
-    Sprite board(log);
+    render::Sprite board(log);
     if (!board.Init("texture/board.jpg", 2, 2)) {
         log->critical("failed to load board");
         return -1;
@@ -56,21 +56,21 @@ int main() {
 
     const float CELL_SIZE = 2.f / 8.f;
 
-    Sprite king(log);
+    render::Piece king(log);
     if (!king.Init("texture/white-king.png", CELL_SIZE, CELL_SIZE)) {
         log->critical("failed to load board");
         return -1;
     }
     king.AttachProgram(program.native_program());
-    king.SetPosition(0, 0);
+    king.SetLogicalPosition(4, 0);
 
-    Sprite queen(log);
+    render::Piece queen(log);
     if (!queen.Init("texture/white-queen.png", CELL_SIZE, CELL_SIZE)) {
         log->critical("failed to load board");
         return -1;
     }
     queen.AttachProgram(program.native_program());
-    queen.SetPosition(CELL_SIZE, 0);
+    queen.SetLogicalPosition(3, 0);
 
     program.Use();
 

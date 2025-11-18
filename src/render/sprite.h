@@ -3,14 +3,16 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#include "texture.h"
-#include "vao.h"
-#include "vbo.h"
+#include "gl/texture.h"
+#include "gl/vao.h"
+#include "gl/vbo.h"
 
 #include <spdlog/spdlog.h>
 
+namespace render {
+
 class Sprite {
-private:
+protected:
     Texture* _texture;
 
     VAO* _vao;
@@ -35,3 +37,5 @@ public:
 
     void Draw();
 };
+
+}
