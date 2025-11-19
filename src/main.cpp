@@ -8,7 +8,7 @@
 #include "core/shader.h"
 #include "core/program.h"
 
-#include "render/piece.h"
+#include "render/board.h"
 
 #include "util/config.h"
 
@@ -46,31 +46,11 @@ int main() {
         return -1;
     }
 
-    render::Sprite board(log);
-    if (!board.Init("texture/board.jpg", 2, 2)) {
-        log->critical("failed to load board");
+    render::Board board(log);
+    if (!board.Init(program.native_program())) {
+        log->critical("failed to load rendering board");
         return -1;
     }
-    board.AttachProgram(program.native_program());
-    board.SetPosition(0, 0);
-
-    const float CELL_SIZE = 2.f / 8.f;
-
-    render::Piece king(log);
-    if (!king.Init("texture/white-king.png", CELL_SIZE, CELL_SIZE)) {
-        log->critical("failed to load board");
-        return -1;
-    }
-    king.AttachProgram(program.native_program());
-    king.SetLogicalPosition(4, 0);
-
-    render::Piece queen(log);
-    if (!queen.Init("texture/white-queen.png", CELL_SIZE, CELL_SIZE)) {
-        log->critical("failed to load board");
-        return -1;
-    }
-    queen.AttachProgram(program.native_program());
-    queen.SetLogicalPosition(3, 0);
 
     program.Use();
 
@@ -80,8 +60,6 @@ int main() {
         glfwPollEvents();
 
         board.Draw();
-        king.Draw();
-        queen.Draw();
     }
 
     return 0;
