@@ -25,6 +25,14 @@ void Piece::SetLogicalPosition(unsigned int x, unsigned int y) {
     SetPosition(CELL_SIZE * x, CELL_SIZE * y);
 }
 
+PieceType Piece::type() {
+    return _type;
+}
+
+PieceColor Piece::color() {
+    return _color;
+}
+
 string RetrieveTextureSource(PieceColor color, PieceType type) {
     string texture_path = texture_source::PATH;
     switch(type) {

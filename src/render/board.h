@@ -15,6 +15,10 @@ private:
     void CleanupBoard();
     void CleanupCell(unsigned int x, unsigned int y);
 
+    bool IsLegal(unsigned int x, unsigned int y, unsigned int destination_x, unsigned int destination_y);
+
+    PieceColor _move;
+
     shared_ptr<spdlog::logger> _log;
 public:
     Board(shared_ptr<spdlog::logger> log);

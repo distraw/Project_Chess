@@ -34,6 +34,9 @@ public:
     bool Init(PieceColor color, PieceType type, unsigned int x, unsigned int y);
 
     void SetLogicalPosition(unsigned int x, unsigned int y);
+
+    PieceType type();
+    PieceColor color();
 };
 
 }

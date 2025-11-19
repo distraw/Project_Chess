@@ -95,8 +95,106 @@ void Board::CleanupCell(unsigned int x, unsigned int y) {
     _board[x][y] = nullptr;
 }
 
+bool Board::IsLegal(unsigned int x, unsigned int y, unsigned int destination_x, unsigned int destination_y) {
+    if (x > BOARD_SIZE || y > BOARD_SIZE) {
+        return false;
+    }
+
+    if (x == destination_x && y == destination_y) {
+        return false;
+    }
+
+    if (_board[x][y] == nullptr) {
+        return false;
+    }
+
+    if (_board[x][y]->color() != _move) {
+        return false;
+    }
+
+    if (_board[destination_x][destination_y] != nullptr 
+        && _board[x][y]->color() == _board[destination_x][destination_y]->color()) {
+        return false;
+    }
+
+    bool destination_clear = _board[destination_x][destination_y] == nullptr;
+
+    switch (_board[x][y]->type()) {
+    case PieceType::PAWN:
+        if (_board[x][y]->color() == PieceColor::WHITE) {
+            if (destination_y == y + 1) {
+                if (abs(int(x) - int(destination_x)) == 1 && !destination_clear) {
+                    return true;
+                }
+
+                if (x == destination_x && destination_clear) {
+                    return true;
+                }
+            }
+            if (x == destination_x && y == 1 && destination_y == y + 2 && _board[x][y + 1] == nullptr && destination_clear) {
+                return true;
+            }
+        }
+        if (_board[x][y]->color() == PieceColor::BLACK) {
+            if (destination_y == y - 1) {
+                if (abs(int(x) - int(destination_x)) == 1 && !destination_clear) {
+                    return true;
+                }
+
+                if (x == destination_x && destination_clear) {
+                    return true;
+                }
+            }
+            if (x == destination_x && y == 6 && destination_y == y - 2 && _board[x][y - 1] == nullptr && destination_clear) {
+                return true;
+            }
+        }
+        break;
+    case PieceType::KING:
+        if (abs(int(x) - int(destination_x)) == 1 || abs(int(y) - int(destination_y)) == 1) {
+            return true;
+        }
+        break;
+    case PieceType::QUEEN:
+        if (x == destination_x) {
+            return true;
+        }
+        if (y == destination_y) {
+            return true;
+        }
+        if (abs(int(x) - int(destination_x)) == abs(int(y) - int(destination_y))) {
+            return true;
+        }
+        break;
+    case PieceType::BISHOP:
+        if (abs(int(x) - int(destination_x)) == abs(int(y) - int(destination_y))) {
+            return true;
+        }
+        break;
+    case PieceType::ROOK:
+        if (x == destination_x) {
+            return true;
+        }
+        if (y == destination_y) {
+            return true;
+        }
+        break;
+    case PieceType::HORSE:
+        int distance_x = abs(int(x) - int(destination_x));
+        int distance_y = abs(int(y) - int(destination_y));
+        if ((distance_x == 2 && distance_y == 1) || (distance_x == 1 && distance_y == 2)) {
+            return true;
+        }
+        break;
+    }
+
+    return false;
+}
+
 bool Board::Init(GLuint shader_program) {
     _shader_program = shader_program;
+
+    _move = PieceColor::WHITE;
 
     _background = new Sprite(_log);
     if (!_background->Init(string(texture_source::PATH) + texture_source::BOARD, CELL_SIZE * BOARD_SIZE, CELL_SIZE * BOARD_SIZE)) {
@@ -127,14 +225,25 @@ void Board::Insert(unsigned int x, unsigned int y, PieceColor color, PieceType t
 }
 
 void Board::Move(unsigned int x, unsigned int y, unsigned int destination_x, unsigned int destination_y) {
-    if (_board[destination_x][destination_y] != nullptr) {
-        CleanupCell(destination_x, destination_y);
+    if (!IsLegal(x, y, destination_x, destination_y)) {
+        return;
     }
+
+    _move = (_move == PieceColor::WHITE ? PieceColor::BLACK : PieceColor::WHITE);
+
+    CleanupCell(destination_x, destination_y);
 
     _board[x][y]->SetLogicalPosition(destination_x, destination_y);
 
     _board[destination_x][destination_y] = _board[x][y];
     _board[x][y] = nullptr;
+
+    if (destination_y == 0 || destination_y == 7) {
+        if (_board[destination_x][destination_y]->type() == PieceType::PAWN) {
+            Insert(destination_x, destination_y, _board[destination_x][destination_y]->color()
+                    , PieceType::QUEEN);
+        }
+    }
 }
 
 
