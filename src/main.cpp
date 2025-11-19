@@ -51,9 +51,14 @@ int main() {
         log->critical("failed to load rendering board");
         return -1;
     }
+    
+    board.Move(4, 1, 4, 3);
+    board.Move(4, 6, 4, 4);
+    board.Move(6, 0, 5, 2);
+    board.Move(1, 7, 2, 5);
+    board.Move(5, 0, 2, 3);
 
     program.Use();
-
     window.ChangeBackgroundColor(1, 0, 0);
     while (window.IsOpened()) {
         window.Refresh();

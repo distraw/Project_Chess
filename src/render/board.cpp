@@ -41,26 +41,26 @@ bool Board::FillEmptyBoard() {
     constexpr int WHITE_PAWN_ROW = 1;
 
     for (size_t i = 0; i < BOARD_SIZE; i++) {
-        Insert(i, BLACK_PAWN_ROW, PieceType::BLACK_PAWN);
-        Insert(i, WHITE_PAWN_ROW, PieceType::WHITE_PAWN);
+        Insert(i, BLACK_PAWN_ROW, PieceColor::BLACK, PieceType::PAWN);
+        Insert(i, WHITE_PAWN_ROW, PieceColor::WHITE, PieceType::PAWN);
     }
 
-    Insert(0, 0, PieceType::WHITE_ROOK);
-    Insert(0, 7, PieceType::BLACK_ROOK);
-    Insert(1, 0, PieceType::WHITE_HORSE);
-    Insert(1, 7, PieceType::BLACK_HORSE);
-    Insert(2, 0, PieceType::WHITE_BISHOP);
-    Insert(2, 7, PieceType::BLACK_BISHOP);
-    Insert(3, 0, PieceType::WHITE_QUEEN);
-    Insert(3, 7, PieceType::BLACK_QUEEN);
-    Insert(4, 0, PieceType::WHITE_KING);
-    Insert(4, 7, PieceType::BLACK_KING);
-    Insert(5, 0, PieceType::WHITE_BISHOP);
-    Insert(5, 7, PieceType::BLACK_BISHOP);
-    Insert(6, 0, PieceType::WHITE_HORSE);
-    Insert(6, 7, PieceType::BLACK_HORSE);
-    Insert(7, 0, PieceType::WHITE_ROOK);
-    Insert(7, 7, PieceType::BLACK_ROOK);
+    Insert(0, 0, PieceColor::WHITE, PieceType::ROOK);
+    Insert(0, 7, PieceColor::BLACK, PieceType::ROOK);
+    Insert(1, 0, PieceColor::WHITE, PieceType::HORSE);
+    Insert(1, 7, PieceColor::BLACK, PieceType::HORSE);
+    Insert(2, 0, PieceColor::WHITE, PieceType::BISHOP);
+    Insert(2, 7, PieceColor::BLACK, PieceType::BISHOP);
+    Insert(3, 0, PieceColor::WHITE, PieceType::QUEEN);
+    Insert(3, 7, PieceColor::BLACK, PieceType::QUEEN);
+    Insert(4, 0, PieceColor::WHITE, PieceType::KING);
+    Insert(4, 7, PieceColor::BLACK, PieceType::KING);
+    Insert(5, 0, PieceColor::WHITE, PieceType::BISHOP);
+    Insert(5, 7, PieceColor::BLACK, PieceType::BISHOP);
+    Insert(6, 0, PieceColor::WHITE, PieceType::HORSE);
+    Insert(6, 7, PieceColor::BLACK, PieceType::HORSE);
+    Insert(7, 0, PieceColor::WHITE, PieceType::ROOK);
+    Insert(7, 7, PieceColor::BLACK, PieceType::ROOK);
 
     return true;
 }
@@ -112,7 +112,7 @@ bool Board::Init(GLuint shader_program) {
     return true;
 }
 
-void Board::Insert(unsigned int x, unsigned int y, PieceType type) {
+void Board::Insert(unsigned int x, unsigned int y, PieceColor color, PieceType type) {
     if (x > BOARD_SIZE || y > BOARD_SIZE) {
         _log->warn("attempted to insert outside of chess board borders");
         return;
@@ -120,12 +120,23 @@ void Board::Insert(unsigned int x, unsigned int y, PieceType type) {
 
     CleanupCell(x, y);
     _board[x][y] = new Piece(_log);
-    if (!_board[x][y]->Init(type, x, y)) {
+    if (!_board[x][y]->Init(color, type, x, y)) {
         _log->warn("failed to initialize piece at [{0},{1}]", x, y);
     }
     _board[x][y]->AttachProgram(_shader_program);
-    _board[x][y]->Init(type, x, y);
 }
+
+void Board::Move(unsigned int x, unsigned int y, unsigned int destination_x, unsigned int destination_y) {
+    if (_board[destination_x][destination_y] != nullptr) {
+        CleanupCell(destination_x, destination_y);
+    }
+
+    _board[x][y]->SetLogicalPosition(destination_x, destination_y);
+
+    _board[destination_x][destination_y] = _board[x][y];
+    _board[x][y] = nullptr;
+}
+
 
 void Board::Draw() {
     _background->Draw();

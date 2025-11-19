@@ -22,7 +22,8 @@ public:
 
     bool Init(GLuint shader_program);
 
-    void Insert(unsigned int x, unsigned int y, PieceType type);
+    void Insert(unsigned int x, unsigned int y, PieceColor color, PieceType type);
+    void Move(unsigned int x, unsigned int y, unsigned int destination_x, unsigned int destination_y);
 
     void Draw();
 };
