@@ -9,11 +9,27 @@
 
 #include "input.h"
 
+#include <cstdio>
+
 #include "util/config.h"
+
+class CatchExit {
+    shared_ptr<spdlog::logger> _log;
+public:
+    CatchExit(shared_ptr<spdlog::logger> log) {
+        _log = log;
+    }
+    ~CatchExit() {
+        _log->info("Program exited. Press any key to continue...");
+        getchar();
+    }
+};
 
 int main() {
     auto log = spdlog::stdout_color_mt("stdout");
-    log->set_level(spdlog::level::debug);
+    log->set_level(spdlog::level::trace);
+    
+    CatchExit t(log);
 
     Config config(log);
     if (!config.Init("./settings.json")) {
@@ -54,6 +70,8 @@ int main() {
     program.Use();
     window.ChangeBackgroundColor(1, 0, 0);
     while (window.IsOpened()) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+
         window.Refresh();
         glfwPollEvents();
 

@@ -1,10 +1,6 @@
 /build
-/lib
+/build-win
 /.vscode
 
 # For macos
 .DS_Store
-
-CMakeLists.txt
-run.bash
-TODO.md

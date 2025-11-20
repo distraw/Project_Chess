@@ -1,6 +1,9 @@
 #include "shader.h"
 
+#include <sstream>
 #include <fstream>
+
+using namespace std;
 
 Shader::Shader(shared_ptr<spdlog::logger> log) {
     _log = log;

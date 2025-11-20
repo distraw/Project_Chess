@@ -31,6 +31,7 @@ bool Window::Init(int width, int height, string title) {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
 #ifdef __APPLE__
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
@@ -41,6 +42,10 @@ bool Window::Init(int width, int height, string title) {
     glfwMakeContextCurrent(_window);
     if (_window == nullptr) {
         _log->critical("failed to open window");
+        const char* err;
+        glfwGetError(&err);
+        _log->critical(err);
+        
         return false;
     }
     _log->trace("initialized window");

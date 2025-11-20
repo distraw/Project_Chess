@@ -1,6 +1,6 @@
 {
     "window": {
         "resolution": [600, 600],
-        "fullscreen": false
+        "fullscreen": true
     }
 }
